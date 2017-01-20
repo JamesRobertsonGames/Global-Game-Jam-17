@@ -5,9 +5,16 @@ public class Turns : MonoBehaviour
 {
     public int PlayerTurnSelect;
 
-	// Use this for initialization
-	void Start ()
+    public GameObject PlayerOne;
+    public GameObject PlayerTwo;
+    public GameObject PlayerThree;
+    public GameObject PlayerFour;
+
+
+    // Use this for initialization
+    void Start ()
     {
+
 	    
 	}
 	
@@ -24,8 +31,30 @@ public class Turns : MonoBehaviour
         {
             case 1:
                 // Temp - put player rounds in here
-                int o = 0;
+                TurnLogic(1);
                 break;
         }
+    }
+
+    GameObject GetPlayerObject(int PlayerIndex)
+    {
+        switch(PlayerIndex)
+        {
+            case 1:
+                return PlayerOne;
+            case 2:
+                return PlayerTwo;
+            case 3:
+                return PlayerThree;
+            case 4:
+                return PlayerFour;
+        }
+        return PlayerOne;
+    }
+
+    void TurnLogic (int Player)
+    {
+        GameObject PlayerLogicBoard = GetPlayerObject(Player);
+        
     }
 }
