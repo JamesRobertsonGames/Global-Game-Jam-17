@@ -9,4 +9,4 @@ echo 'Downloading from $unity_url: '
 curl -o Unity.pkg "$unity_url"
 ls -lh
 echo 'Installing Unity.pkg'
-sudo installer -dumplog -package Unity.pkg -target /
+sudo installer -dumplog -package ./Unity.pkg -target /
