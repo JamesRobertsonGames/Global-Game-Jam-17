@@ -9,8 +9,8 @@ echo "Downloading from $unity_url: "
 curl -o Unity.dmg "$unity_url"
 hdiutil attach Unity.dmg
 mount
-ls -lh
+ls -lh "/Volumes/Unity Download Assistant/"
 echo 'Installing Unity.pkg'
-# sudo installer -verbose -allowUntrusted -dumplog -package Unity.pkg -target /
-hdiutil detach Unity.dmg
+sudo installer -verbose -allowUntrusted -dumplog -package Unity.pkg -target /
+hdiutil detach "/Volumes/Unity Download Assistant/"
 mount
