@@ -8,5 +8,6 @@ unity_url="http://download.unity3d.com/download_unity/960ebf59018a/UnityDownload
 echo 'Downloading from $unity_url: '
 curl -o Unity.pkg "$unity_url"
 ls -lh
+file Unity.pkg
 echo 'Installing Unity.pkg'
-sudo installer -dumplog -package ./Unity.pkg -target /
+sudo installer -dumplog -package -allowUntrusted Unity.pkg -target /
