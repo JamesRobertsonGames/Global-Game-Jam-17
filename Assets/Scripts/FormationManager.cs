@@ -7,8 +7,12 @@ public class FormationManager : MonoBehaviour
     public GameObject BoatOne, BoatTwo, BoatThree;
     public bool BoatOnePlaced, BoatTwoPlaced, BoatThreePlaced, PlacementRoundOver = false;
     public float WaterHeight;
+    bool firstTime = true;
 
     RaycastHit hit;
+
+    Color MaterialStorage;
+    GameObject PastTrace = null;
 
     public Tile SelectedTile;
 
@@ -28,9 +32,40 @@ public class FormationManager : MonoBehaviour
     {
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 10000000))
         {
+            if (PastTrace != hit.collider.gameObject)
+            {
+                if (firstTime)
+                {
+                    MaterialStorage = hit.collider.gameObject.GetComponent<Renderer>().material.color;
+                    PastTrace = hit.collider.gameObject;
+                    hit.collider.gameObject.GetComponent<Renderer>().material.color = Color.cyan;
+                    firstTime = false;
+                }
+                else
+                {
+                    PastTrace.GetComponent<Renderer>().material.color = MaterialStorage;
+                    Debug.Log("CHANGE");
+                    firstTime = true;
+                }
+
+            }
+
+
             if (Input.GetMouseButtonDown(0))
             {
                 PlacePlayerinWater();
+            }
+            
+        }
+        else
+        {
+            if (!firstTime)
+            {
+                PastTrace.GetComponent<Renderer>().material.color = MaterialStorage;
+                Debug.Log("CHANGE");
+                firstTime = true;
+
+
             }
         }
     }
