@@ -10,4 +10,4 @@ curl -o Unity.pkg "$unity_url"
 ls -lh
 file Unity.pkg
 echo 'Installing Unity.pkg'
-sudo installer -dumplog -package -allowUntrusted Unity.pkg -target /
+sudo installer -verbose -allowUntrusted -dumplog -package Unity.pkg -target /
