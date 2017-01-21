@@ -22,7 +22,15 @@ public class RoundManager : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-	    if (!BoatsFormationsPlayerOne.PlacementRoundOver)
+        if (!PlayModeEnabled)
+        {
+            CreateFormation();
+        }
+    }
+
+    void CreateFormation()
+    {
+        if (!BoatsFormationsPlayerOne.PlacementRoundOver)
         {
             BoatsFormationsPlayerOne.PlayerRoutine();
             Camera.transform.position = SetupCameraPositionPlayerOne.transform.position;
