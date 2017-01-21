@@ -5,7 +5,11 @@ public class GameplayCamera : MonoBehaviour
 {
 
     public Vector3 Offset;
-    public GameObject Ship;
+
+    public int PlayerTurn = 0;
+    public GameObject ShipOne_One;
+    public GameObject ShipOne_Two;
+
     public RoundManager Manager;
 
     // Use this for initialization
@@ -17,12 +21,31 @@ public class GameplayCamera : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-	
-	}
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            PlayerTurn = 1;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            PlayerTurn = 2;
+        }
+
+        PlayerFollow();
+
+
+    }
 
     void PlayerFollow()
     {
-        Manager.Camera.transform.position = Ship.transform.position + Offset;
+        if (PlayerTurn == 1)
+        {
+            Manager.Camera.transform.position = ShipOne_One.transform.position + Offset;
+        }
+        if (PlayerTurn == 2)
+        {
+            Manager.Camera.transform.position = ShipOne_Two.transform.position + Offset;
+        }
     }
 
     void ExploreMode()
