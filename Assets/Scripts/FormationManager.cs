@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
+using DG.Tweening;
 
 public class FormationManager : MonoBehaviour
 {
-
+    /*
     public GameObject BoatOne, BoatTwo, BoatThree;
     public bool BoatOnePlaced, BoatTwoPlaced, BoatThreePlaced, PlacementRoundOver = false;
     public float WaterHeight;
@@ -16,17 +19,6 @@ public class FormationManager : MonoBehaviour
 
     public Tile SelectedTile;
 
-	// Use this for initialization
-	void Start ()
-    {
-        
-	}
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 
     public void HoverRoutine()
     {
@@ -65,7 +57,7 @@ public class FormationManager : MonoBehaviour
     {
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 10000000))
         { 
-            HoverRoutine();
+            //HoverRoutine();
 
             if (Input.GetMouseButtonDown(0))
             {
@@ -102,6 +94,239 @@ public class FormationManager : MonoBehaviour
         if (BoatThreePlaced)
         {
             PlacementRoundOver = true;
+        }
+    }
+    */
+    // MY STUFF
+    public List<Ship> activeShips;
+    public bool firstTurn;
+    public Ship[] boats;
+    public int playerID;
+
+    // Use this for initialization
+    void Start()
+    {
+        firstTurn = true;
+        activeShips = new List<Ship>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+    public bool CompletedTurn()
+    {
+        if(firstTurn)
+        {
+            if (activeShips.Count < 3)
+                return false;
+            else
+            {
+                firstTurn = false;
+                return true;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < activeShips.Count; i++)
+            {
+                if (!activeShips[i].FinishedTurn())
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    Ship currentShip;
+    Ship enemyShip;
+    bool attackPhase;
+    bool attacking;
+    float attackTimer;
+    public void TakeTurn()
+    {
+        if (firstTurn)
+        {
+            if (Input.GetMouseButtonDown(0) && RoundManager.GetInstance().cursor.active)
+            {
+                if (!RoundManager.GetInstance().IsCurrentTileOccupied())
+                {
+                    Ship newBoat = Instantiate(boats[activeShips.Count], RoundManager.GetInstance().cursor.transform.position, Quaternion.Euler(0, (playerID == 1 ? 90 : 270), 0)) as Ship;
+                    newBoat.team = playerID;
+                    RoundManager.GetInstance().GetCurrentTile().occupant = newBoat.gameObject;
+                    activeShips.Add(newBoat);
+                }
+            }
+        }
+        else
+        {
+            float h = Input.GetAxis("Horizontal");
+
+            if (h != 0)
+            {
+                transform.position += new Vector3(h * 50 * Time.deltaTime, 0);
+                RoundManager.GetInstance().camera.transform.position = transform.position;
+            }
+
+            if(activeShips.Count == 0)
+                RoundManager.GetInstance().LostGame(playerID);
+
+            if(attacking)
+            {
+                if (attackTimer == 3)
+                {
+                    currentShip.Select(false);
+                    Camera.main.transform.DOMove(((currentShip.transform.position + enemyShip.transform.position) * 0.5f) - Camera.main.transform.forward * 15, 1);
+                    currentShip.Attack(enemyShip);
+                }
+                attackTimer -= Time.deltaTime;
+                
+
+                if(attackTimer < 0)
+                {
+                    RoundManager.GetInstance().ResetCamera(playerID);
+                    attacking = false;
+                    currentShip.EndTurn();
+                    currentShip = null;
+                }
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                if(currentShip)
+                {
+                    if(attackPhase)
+                    {
+                        if (RoundManager.GetInstance().IsCurrentTileOccupied())
+                        {
+                            GameObject o = RoundManager.GetInstance().GetCurrentTile().occupant;
+
+                            if (o.GetComponent<Ship>().team != currentShip.team)
+                            {
+                                enemyShip = o.GetComponent<Ship>();
+                                attackPhase = false;
+                                attacking = true;
+                                attackTimer = 3;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (!RoundManager.GetInstance().IsCurrentTileOccupied() && RoundManager.GetInstance().cursor.active)
+                        {
+                            if (WorldGenerator.GetInstance().CheckMoveTile(RoundManager.GetInstance().GetCurrentTile()))
+                            {
+                                WorldGenerator.GetInstance().GetTile(currentShip.transform.position).occupant = null;
+                                currentShip.transform.position = RoundManager.GetInstance().cursor.transform.position;
+                                RoundManager.GetInstance().GetCurrentTile().occupant = currentShip.gameObject;
+
+                                currentShip.ShowAttackRange();
+                                if (WorldGenerator.GetInstance().CanAttack())
+                                {
+                                    attackPhase = true;
+                                }
+                                else
+                                {
+                                    currentShip.EndTurn();
+                                    currentShip.Select(false);
+                                    currentShip = null;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (RoundManager.GetInstance().IsCurrentTileOccupied())
+                    {
+                        GameObject o = RoundManager.GetInstance().GetCurrentTile().occupant;
+
+                        for (int i = 0; i < activeShips.Count; i++)
+                        {
+                            if (activeShips[i].FinishedTurn())
+                                continue;
+
+                            if (o == activeShips[i].gameObject)
+                            {
+                                currentShip = activeShips[i];
+                                currentShip.Select(true);
+                            }                      
+                        }
+                    }   //////////////////////// EWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+                }   //////////////////////////// EWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+            }   //////////////////////////////// EWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+        }   //////////////////////////////////// EWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW  
+    }   //////////////////////////////////////// EWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
+
+    public void Reset()
+    {
+        for(int i = 0; i < activeShips.Count; i++)
+        {
+            activeShips[i].Restart();
+        }
+    }
+
+    public void Wake()
+    {
+        for (int i = 0; i < activeShips.Count; i++)
+        {
+            activeShips[i].Alert();
+        }
+    }
+
+    public void Check()
+    {
+        for (int i = 0; i < activeShips.Count; i++)
+        {
+            if(activeShips[i].killFlag)
+            {
+                WorldGenerator.GetInstance().GetTile(activeShips[i].transform.position).gObject = null;
+                activeShips.RemoveAt(i);
+            }
+        }
+    }
+
+    public void UpdateCamera()
+    {
+        float x = 0;
+        for (int i = 0; i < activeShips.Count; i++)
+        {
+            x += activeShips[i].transform.position.x;
+        }
+        x /= activeShips.Count;
+
+        Vector3 pos = transform.position;
+        transform.position = new Vector3(x, pos.y, pos.z);
+    }
+
+    public void SkipMove()
+    {
+        if (!currentShip)
+            return;
+
+        if(attackPhase)
+        {
+            attacking = false;
+            currentShip.EndTurn();
+            currentShip.Select(false);
+            currentShip = null;
+
+            attackPhase = false;
+        }
+        else
+        {
+            currentShip.ShowAttackRange();
+            if (WorldGenerator.GetInstance().CanAttack())
+            {
+                attackPhase = true;
+            }
+            else
+            {
+                currentShip.EndTurn();
+                currentShip.Select(false);
+                currentShip = null;
+            }
         }
     }
 }
