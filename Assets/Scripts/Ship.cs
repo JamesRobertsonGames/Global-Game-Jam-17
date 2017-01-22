@@ -21,14 +21,28 @@ public class Ship : MonoBehaviour {
     bool ready;
     public GameObject readyObject;
     public GameObject model;
+    public GameObject healthBarChunk;
+
+    public GameObject SinkingSmoke;
+    public GameObject CannonExplode;
 
     public GameObject cannonball;
     public Transform cannonballSpawn;
 
+    GameObject CrashSmoke;
+    GameObject Splosion;
+
     public int team;
-    
-	// Use this for initialization
-	void Start()
+
+    GameObject bar1;
+    GameObject bar2;
+    GameObject bar3;
+    GameObject bar4;
+
+    bool healthfirsttime = true;
+
+    // Use this for initialization
+    void Start()
     {
         rotationTimer = Random.Range(0, 90);
         active = true;
@@ -41,6 +55,7 @@ public class Ship : MonoBehaviour {
 	// Update is called once per frame
 	void Update()
     {
+        CalculateHealthBar();
         if(transform.position.y > 8)
         {
             active = false;
@@ -48,7 +63,7 @@ public class Ship : MonoBehaviour {
         }
         if(active)
         {
-            if(animate)
+            if (animate)
             {
                 rotationTimer += Time.deltaTime;
 
@@ -207,6 +222,8 @@ public class Ship : MonoBehaviour {
 
         target.TakeDamage(GetDamage());
         transform.DORotate(startRot, 1);
+        Splosion = Instantiate(CannonExplode);
+        Splosion.transform.position = target.transform.position;
         Destroy(ball.gameObject);
         yield return null;
     }
@@ -219,8 +236,67 @@ public class Ship : MonoBehaviour {
     public void TakeDamage(int n)
     {
         health -= n;
+        CalculateHealthBar();
         if (health <= 0)
             Kill();
+    }
+
+    public void CalculateHealthBar()
+    {
+        if (healthfirsttime)
+        {
+            bar1 = Instantiate(healthBarChunk);
+            bar2 = Instantiate(healthBarChunk);
+            bar3 = Instantiate(healthBarChunk);
+            bar4 = Instantiate(healthBarChunk);
+
+            bar1.transform.Rotate(90, 90, 0);
+            bar2.transform.Rotate(90, 90, 0);
+            bar3.transform.Rotate(90, 90, 0);
+            bar4.transform.Rotate(90, 90, 0);
+
+            healthfirsttime = false;
+        }
+        if (health > 0)
+        {
+           
+            bar1.transform.position = new Vector3(model.transform.position.x - 3, model.transform.position.y + 7, model.transform.position.z);
+        }
+        else
+        {
+            if (bar1)
+                Destroy(bar1);
+        }
+        if (health > 5)
+        {
+           
+            bar2.transform.position = new Vector3(model.transform.position.x - 1, model.transform.position.y + 7, model.transform.position.z);
+        }
+        else
+        {
+            if (bar2)
+                Destroy(bar2);
+        }
+        if (health > 10)
+        {
+            
+            bar3.transform.position = new Vector3(model.transform.position.x + 1, model.transform.position.y + 7, model.transform.position.z);
+        }
+        else
+        {
+            if (bar3)
+                Destroy(bar3);
+        }
+        if (health > 15)
+        {
+
+            bar4.transform.position = new Vector3(model.transform.position.x + 3, model.transform.position.y + 7, model.transform.position.z);
+        }
+        else
+        {
+            if (bar4)
+                Destroy(bar4);
+        }
     }
 
     [HideInInspector] public bool killFlag;
@@ -231,6 +307,8 @@ public class Ship : MonoBehaviour {
         animate = false;
         ready = false;
 
+        CrashSmoke = Instantiate(SinkingSmoke);
+
         StartCoroutine(Sink());
     }
 
@@ -239,6 +317,7 @@ public class Ship : MonoBehaviour {
         do
         {
             transform.position -= Vector3.up * 2 * Time.deltaTime;
+            CrashSmoke.transform.position = transform.position;
             yield return null;
         } while(transform.position.y > 0);
         
