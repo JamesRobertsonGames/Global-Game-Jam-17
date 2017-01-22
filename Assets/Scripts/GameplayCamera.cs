@@ -40,11 +40,11 @@ public class GameplayCamera : MonoBehaviour
     {
         if (PlayerTurn == 1)
         {
-            Manager.Camera.transform.position = ShipOne_One.transform.position + Offset;
+            Manager.camera.transform.position = ShipOne_One.transform.position + Offset;
         }
         if (PlayerTurn == 2)
         {
-            Manager.Camera.transform.position = ShipOne_Two.transform.position + Offset;
+            Manager.camera.transform.position = ShipOne_Two.transform.position + Offset;
         }
     }
 
