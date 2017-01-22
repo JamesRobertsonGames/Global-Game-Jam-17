@@ -7,9 +7,14 @@ public class RoundManager : MonoBehaviour
     public FormationManager BoatsFormationsPlayerOne;
     public FormationManager BoatsFormationsPlayerTwo;
 
+    public SimpleSailing PlayerMovement;
+
     public GameObject Camera;
     public GameObject SetupCameraPositionPlayerOne;
     public GameObject SetupCameraPositionPlayerTwo;
+
+    bool RoundComplete = false;
+    int hack = 0;
 
     public bool PlayModeEnabled = false;
 
@@ -25,6 +30,15 @@ public class RoundManager : MonoBehaviour
         if (!PlayModeEnabled)
         {
             CreateFormation();
+        }
+
+        if (PlayModeEnabled)
+        {
+            hack++;
+            if (hack > 30)
+                if (!RoundComplete)
+                    RoundComplete = PlayerMovement.StartRound(BoatsFormationsPlayerOne, Camera);
+            
         }
     }
 

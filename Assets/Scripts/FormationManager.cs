@@ -28,7 +28,7 @@ public class FormationManager : MonoBehaviour
 
     }
 
-    public void PlayerRoutine()
+    public void HoverRoutine()
     {
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 10000000))
         {
@@ -49,13 +49,6 @@ public class FormationManager : MonoBehaviour
                 }
 
             }
-
-
-            if (Input.GetMouseButtonDown(0))
-            {
-                PlacePlayerinWater();
-            }
-            
         }
         else
         {
@@ -64,9 +57,21 @@ public class FormationManager : MonoBehaviour
                 PastTrace.GetComponent<Renderer>().material.color = MaterialStorage;
                 Debug.Log("CHANGE");
                 firstTime = true;
-
-
             }
+        }
+    }
+
+    public void PlayerRoutine()
+    {
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 10000000))
+        { 
+            HoverRoutine();
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                PlacePlayerinWater();
+            }
+            
         }
     }
 
