@@ -168,6 +168,9 @@ public class Ship : MonoBehaviour {
 
     public bool FinishedTurn()
     {
+        if (temp)
+            return true;
+
         return !ready;
     }
 
@@ -306,6 +309,7 @@ public class Ship : MonoBehaviour {
         active = false;
         animate = false;
         ready = false;
+        WorldGenerator.GetInstance().GetTile(transform.position).occupant = null;
 
         CrashSmoke = Instantiate(SinkingSmoke);
 
@@ -322,5 +326,11 @@ public class Ship : MonoBehaviour {
         } while(transform.position.y > 0);
         
         yield return null;
+    }
+
+    private bool temp;
+    public void Disable()
+    {
+        temp = true;
     }
 }

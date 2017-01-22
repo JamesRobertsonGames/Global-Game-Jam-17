@@ -119,7 +119,7 @@ public class FormationManager : MonoBehaviour
     {
         if(firstTurn)
         {
-            if (activeShips.Count < 3)
+            if (activeShips.Count < 10)
                 return false;
             else
             {
@@ -152,7 +152,7 @@ public class FormationManager : MonoBehaviour
             {
                 if (!RoundManager.GetInstance().IsCurrentTileOccupied())
                 {
-                    Ship newBoat = Instantiate(boats[activeShips.Count], RoundManager.GetInstance().cursor.transform.position, Quaternion.Euler(0, (playerID == 1 ? 90 : 270), 0)) as Ship;
+                    Ship newBoat = Instantiate(boats[Random.Range(0, 2) + 1], RoundManager.GetInstance().cursor.transform.position, Quaternion.Euler(0, (playerID == 1 ? 90 : 270), 0)) as Ship;
                     newBoat.team = playerID;
                     RoundManager.GetInstance().GetCurrentTile().occupant = newBoat.gameObject;
                     activeShips.Add(newBoat);
@@ -263,7 +263,8 @@ public class FormationManager : MonoBehaviour
     {
         for(int i = 0; i < activeShips.Count; i++)
         {
-            activeShips[i].Restart();
+            if(!activeShips[i].killFlag)
+                activeShips[i].Restart();
         }
     }
 
@@ -271,7 +272,8 @@ public class FormationManager : MonoBehaviour
     {
         for (int i = 0; i < activeShips.Count; i++)
         {
-            activeShips[i].Alert();
+            if (!activeShips[i].killFlag)
+                activeShips[i].Alert();
         }
     }
 
@@ -281,8 +283,9 @@ public class FormationManager : MonoBehaviour
         {
             if(activeShips[i].killFlag)
             {
-                WorldGenerator.GetInstance().GetTile(activeShips[i].transform.position).gObject = null;
-                activeShips.RemoveAt(i);
+                WorldGenerator.GetInstance().GetTile(activeShips[i].transform.position).occupant = null;
+                //activeShips.RemoveAt(i);
+                activeShips[i].Disable();
             }
         }
     }
