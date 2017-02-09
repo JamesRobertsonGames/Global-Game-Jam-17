@@ -6,6 +6,10 @@ using DG.Tweening;
 
 public class FormationManager : MonoBehaviour
 {
+
+    [Range(1, 10)]
+    public int shipcount;
+
     /*
     public GameObject BoatOne, BoatTwo, BoatThree;
     public bool BoatOnePlaced, BoatTwoPlaced, BoatThreePlaced, PlacementRoundOver = false;
@@ -119,7 +123,7 @@ public class FormationManager : MonoBehaviour
     {
         if(firstTurn)
         {
-            if (activeShips.Count < 10)
+            if (activeShips.Count < shipcount)
                 return false;
             else
             {

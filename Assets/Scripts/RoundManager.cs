@@ -125,6 +125,8 @@ public class RoundManager : MonoBehaviour
         }
     }*/
 
+    // This code does need some tidying up from josh. It is very "GameJammy"
+
     private bool oneMove, twoMove;
     private FormationManager currentPlayer;
     bool PlayerPhase()
